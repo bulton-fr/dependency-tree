@@ -1,0 +1,39 @@
+{
+    "name": "bulton-fr/dependency-tree",
+    "type": "library",
+    "description": "Lib to generate a tree of dependencies with PHP",
+    "keywords": [
+        "dependency tree",
+        "php"
+    ],
+    "homepage": "https://github.com/bulton-fr/CallCurl",
+    "time": "2016-06-19",
+    "license": "LGPL-3.0",
+    "authors": [
+        {
+            "name": "Vermeulen Maxime / Bulton",
+            "homepage": "http://www.bulton.fr",
+            "email": "bulton.fr@bulton.fr"
+        }
+    ],
+    "support": {
+        "email": "support@bulton.fr",
+        "issues": "https://github.com/bulton-fr/bfw/issues",
+        "source": "https://github.com/bulton-fr/bfw"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "ext-curl": "@stable"
+    },
+    "require-dev": {
+        "atoum/atoum": "~2.5"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "bultonFr\\DependencyTree\\": [
+                "src"
+            ]
+        }
+    }
+}
