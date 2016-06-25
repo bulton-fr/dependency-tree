@@ -36,13 +36,17 @@ class Tree
      * 
      * @throws Exception : If dependency already declared
      * 
-     * @return void
+     * @return Tree : Current instance
      */
     public function addDependency($name, $order = 0, $dependencies = [])
     {
         //Check if dependency is already declared.
         if(isset($this->dependenciesInfos[$name])) {
             throw new Exception('Dependency '.$name.' already declared.');
+        }
+        
+        if(!is_array($dependencies)) {
+            throw new Exception('Dependencies must be passed in a array.');
         }
 
         $dependencyInfos        = new \stdClass;
@@ -59,9 +63,15 @@ class Tree
         //Generate the list of depends
         if($dependencies !== []) {
             foreach($dependencies as $dependencyName) {
+                if(!isset($this->listDepends[$dependencyName])) {
+                    $this->listDepends[$dependencyName] = [];
+                }
+                
                 $this->listDepends[$dependencyName][] = $name;
             }
         }
+        
+        return $this;
     }
 
     /**
@@ -198,7 +208,7 @@ class Tree
         //Read the tree for update the order of each dependency
         foreach($this->tree as $order => $dependencies) {
             foreach($dependencies as $dependencyName) {
-                $dependencyInfos = $this->dependenciesInfos[$dependencyName];
+                $dependencyInfos = &$this->dependenciesInfos[$dependencyName];
                 
                 //If the order has not be already updated
                 if($dependencyInfos->order > -1) {

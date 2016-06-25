@@ -20,20 +20,26 @@ class DependencyTree
      * 
      * @throws Exception : If dependency already declared
      * 
-     * @return void
+     * @return DependencyTree : Current instance
      */
     public function addDependency($name, $order = 0, $dependencies = [])
     {
         //Check if dependency is already declared.
-        if(isset($this->dependenciesInfos[$name])) {
+        if(isset($this->dependencies[$name])) {
             throw new Exception('Dependency '.$name.' already declared.');
+        }
+        
+        if(!is_array($dependencies)) {
+            throw new Exception('Dependencies must be passed in a array.');
         }
 
         $dependencyInfos               = new \stdClass;
-        $dependencyInfos->order        = $order;
+        $dependencyInfos->order        = (int) $order;
         $dependencyInfos->dependencies = $dependencies;
 
         $this->dependencies[$name] = $dependencyInfos;
+        
+        return $this;
     }
 
     /**
