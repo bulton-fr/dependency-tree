@@ -23,5 +23,5 @@ var_dump($tree);
  *      [1] => ['package4'] //Possibility to have "package3" here
  *      [2] => ['package3', 'package5']
  *      [3] => ['package6']
- * [2] => ['package7', 'package8']
+ * [3] => ['package7', 'package8']
  */
