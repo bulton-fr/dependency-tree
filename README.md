@@ -1,6 +1,8 @@
 # dependency-tree
 Lib for generate a dependency tree.
 
+[![Build Status](https://travis-ci.org/bulton-fr/dependency-tree.svg?branch=master)](https://travis-ci.org/bulton-fr/dependency-tree) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bulton-fr/dependency-tree/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bulton-fr/dependency-tree/?branch=master) [![Coverage Status](https://coveralls.io/repos/github/bulton-fr/dependency-tree/badge.svg?branch=master)](https://coveralls.io/github/bulton-fr/dependency-tree?branch=master)
+
 The Principle is to have a tree who contains lines. For each lines, there is a tree who contains lines too.
 
 The first lines is for the package which loaded at the same times. But, for the same line, its package may have dependencies between them. So each lines contain a tree where packages are sorted for have their dependencies of the same line loaded before them.
