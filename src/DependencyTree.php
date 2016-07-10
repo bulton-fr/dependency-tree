@@ -9,7 +9,7 @@ class DependencyTree
     /**
      * @var array $dependencies : List of dependency with there infos;
      */
-    protected $dependencies;
+    protected $dependencies = [];
     
     /**
      * Add a dependency to system
