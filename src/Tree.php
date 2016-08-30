@@ -9,23 +9,23 @@ class Tree
     /**
      * @var array $dependenciesInfos : List of dependency with there infos;
      */
-    protected $dependenciesInfos;
+    protected $dependenciesInfos = [];
     
     /**
      * @var array $listDepends : List the depends of each dependancy
      */
-    protected $listDepends;
+    protected $listDepends = [];
     
     /**
      * @var array $dependenciesPositions : List of position in the tree for
      *                                      each dependancy
      */
-    protected $dependenciesPositions;
+    protected $dependenciesPositions = [];
     
     /**
      * @var array : The generate tree
      */
-    protected $tree;
+    protected $tree = [];
 
     /**
      * Add a dependency to system
