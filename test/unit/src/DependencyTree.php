@@ -176,4 +176,31 @@ class DependencyTree extends atoum
             ->array($this->mock->generateDependenciesTree($orderTree))
                 ->isEqualTo($expected);
     }
+    
+    public function testIssue3()
+    {
+        $this->mock->addDependency('package1');
+        $this->mock->addDependency('package2', 1, ['package1']);
+        $this->mock->addDependency('package3', 1, ['package2']);
+        $this->mock->addDependency('package7', 3);
+        
+        $orderTree = [
+            0 => ['package1'],
+            1 => ['package2', 'package3'],
+            3 => ['package7']
+        ];
+        
+        $expected = [
+            0 => [['package1']],
+            1 => [
+                ['package2'],
+                ['package3']
+            ],
+            3 => [['package7']]
+        ];
+        
+        $this->assert('test fix issue #3')
+            ->array($this->mock->generateDependenciesTree($orderTree))
+                ->isEqualTo($expected);
+    }
 }

@@ -187,6 +187,11 @@ class Tree
         
         //Read all depends of each dependencies
         foreach($this->listDepends as $dependencyName => $depends) {
+        
+            //If the dependency in the depend's list is declared on this tree.
+            if (!isset($this->dependenciesInfos[$dependencyName])) {
+                continue;
+            }
             
             //If the package have depends, we continue
             if($depends !== []) {
@@ -205,8 +210,16 @@ class Tree
         //in the correct order
         $this->tree = array_reverse($this->tree);
         
+        //Some line could be empty because the dependency is in another tree
+        //So we define the order manually.
+        $treeOrder = 0;
+        
         //Read the tree for update the order of each dependency
-        foreach($this->tree as $order => $dependencies) {
+        foreach($this->tree as $dependencies) {
+            if ($dependencies === []) {
+                continue;
+            }
+            
             foreach($dependencies as $dependencyName) {
                 $dependencyInfos = &$this->dependenciesInfos[$dependencyName];
                 
@@ -215,8 +228,10 @@ class Tree
                     continue;
                 }
                 
-                $dependencyInfos->order = $order;
+                $dependencyInfos->order = $treeOrder;
             }
+            
+            $treeOrder++;
         }
         
         //Reinit the tree for use the main system of tree generator.
@@ -245,6 +260,11 @@ class Tree
         }
         
         foreach($depends as $dependName) {
+            //If the dependency of the dependency is in a other tree
+            if (!isset($this->dependenciesInfos[$dependName])) {
+                continue;
+            }
+            
             $this->tree[$order][$dependName] = $dependName;
             
             $this->generateOrderForADependency(
