@@ -86,6 +86,10 @@ class Tree extends atoum
 
     public function testGenerateTree()
     {
+        $this->assert('test generateOrderTree without dependency.')
+            ->array($this->mock->generateTree())
+                ->isEqualTo([]);
+        
         $this->mock->addDependency('package1');
         $this->mock->addDependency('package2', 1);
         $this->mock->addDependency('package3', 1, ['package2']);
