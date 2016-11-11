@@ -18,7 +18,7 @@ class Tree extends atoum
      */
     public function beforeTestMethod($testMethod)
     {
-        $this->mock = new MockTree;
+        $this->mock = new \bultonFr\DependencyTree\test\unit\mocks\Tree;
     }
 
     public function testAddDependency()
@@ -188,46 +188,6 @@ class Tree extends atoum
     public function testGenerateOrderForADependency()
     {
         
-    }
-    */
-}
-
-/**
- * Mock de la class à tester
- */
-class MockTree extends \bultonFr\DependencyTree\Tree
-{
-
-    /**
-     * Accesseur get
-     */
-    public function __get($name)
-    {
-        return $this->$name;
-    }
-    
-    /**
-     * Accesseur set
-     */
-    public function __set($name, $value)
-    {
-        $this->$name = $value;
-    }
-    
-    /*
-    public function checkDepend($dependencyName)
-    {
-        return parent::checkDepend($dependencyName);
-    }
-    
-    public function moveDepend($dependencyName, $newOrder)
-    {
-        return parent::moveDepend($dependencyName, $newOrder);
-    }
-    
-    public function generateOrderForADependency($dependencyName, $currentOrder)
-    {
-        return parent::generateOrderForADependency($dependencyName, $currentOrder);
     }
     */
 }

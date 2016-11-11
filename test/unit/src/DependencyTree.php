@@ -18,7 +18,7 @@ class DependencyTree extends atoum
      */
     public function beforeTestMethod($testMethod)
     {
-        $this->mock = new MockDependencyTree;
+        $this->mock = new \bultonFr\DependencyTree\test\unit\mocks\DependencyTree;
     }
 
     public function testAddDependency()
@@ -175,30 +175,5 @@ class DependencyTree extends atoum
         $this->assert('test generateDependenciesTree')
             ->array($this->mock->generateDependenciesTree($orderTree))
                 ->isEqualTo($expected);
-    }
-}
-
-/**
- * Mock de la class à tester
- */
-class MockDependencyTree extends \bultonFr\DependencyTree\DependencyTree
-{
-
-    /**
-     * Accesseur get
-     */
-    public function __get($name)
-    {
-        return $this->$name;
-    }
-
-    public function generateOrderTree()
-    {
-        return parent::generateOrderTree();
-    }
-
-    public function generateDependenciesTree($orderTree)
-    {
-        return parent::generateDependenciesTree($orderTree);
     }
 }

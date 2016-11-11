@@ -31,9 +31,12 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "bultonFr\\DependencyTree\\": [
-                "src"
-            ]
+            "bultonFr\\DependencyTree\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "bultonFr\\DependencyTree\\test\\unit\\mocks\\": "test/unit/mocks"
         }
     }
 }
