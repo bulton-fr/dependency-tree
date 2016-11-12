@@ -48,11 +48,11 @@ class Tree
     public function addDependency($name, $order = 0, $dependencies = [])
     {
         //Check if dependency is already declared.
-        if(isset($this->dependenciesInfos[$name])) {
+        if (isset($this->dependenciesInfos[$name])) {
             throw new Exception('Dependency '.$name.' already declared.');
         }
         
-        if(!is_array($dependencies)) {
+        if (!is_array($dependencies)) {
             throw new Exception('Dependencies must be passed in a array.');
         }
 
@@ -63,13 +63,13 @@ class Tree
         $this->dependenciesInfos[$name] = $dependencyInfos;
         
         //Create the key for list of depends if she doesn't exist
-        if(!isset($this->listDepends[$name])) {
+        if (!isset($this->listDepends[$name])) {
             $this->listDepends[$name] = [];
         }
         
         //Generate the list of depends
-        if($dependencies !== []) {
-            foreach($dependencies as $dependencyName) {
+        if ($dependencies !== []) {
+            foreach ($dependencies as $dependencyName) {
                 if(!isset($this->listDepends[$dependencyName])) {
                     $this->listDepends[$dependencyName] = [];
                 }
@@ -90,11 +90,11 @@ class Tree
     {
         //Read all depencies declared and positioned each dependency on
         //the tree with they order value
-        foreach($this->dependenciesInfos as $name => $dependency) {
+        foreach ($this->dependenciesInfos as $name => $dependency) {
             $order = $dependency->order;
             
             //If the line for this order not exist
-            if(!isset($this->tree[$order])) {
+            if (!isset($this->tree[$order])) {
                 $this->tree[$order] = [];
             }
             
@@ -105,8 +105,8 @@ class Tree
         
         //Read the tree and check depends of each package.
         //Move some package in the tree if need for depends.
-        foreach($this->tree as $dependencies) {
-            foreach($dependencies as $dependencyName) {
+        foreach ($this->tree as $dependencies) {
+            foreach ($dependencies as $dependencyName) {
                 $this->checkDepend($dependencyName);
             }
         }
@@ -132,17 +132,17 @@ class Tree
         $order           = $dependencyInfos->order;
 
         //No depends :)
-        if($listDepends === []) {
+        if ($listDepends === []) {
             return;
         }
 
         //Read all depends and check if they correctly spoted.
         //If not, call the method to move the depend read.
-        foreach($listDepends as $dependencyName) {
+        foreach ($listDepends as $dependencyName) {
             $dependencyPos   = $this->dependenciesPositions[$dependencyName];
             $dependencyOrder = $dependencyPos[0];
 
-            if($dependencyOrder < $order) {
+            if ($dependencyOrder < $order) {
                 $this->moveDepend($dependencyName, $order);
             }
         }
@@ -163,7 +163,7 @@ class Tree
         $oldOrder        = $dependencyInfos->order;
 
         //If the new position not already exist in the tree
-        if(!isset($this->tree[$newOrder])) {
+        if (!isset($this->tree[$newOrder])) {
             $this->tree[$newOrder] = [];
         }
 
@@ -194,7 +194,7 @@ class Tree
         $this->tree = [[]]; //generate a empty tree
         
         //Read all depends of each dependencies
-        foreach($this->listDepends as $dependencyName => $depends) {
+        foreach ($this->listDepends as $dependencyName => $depends) {
         
             //If the dependency in the depend's list is declared on this tree.
             if (!isset($this->dependenciesInfos[$dependencyName])) {
@@ -202,7 +202,7 @@ class Tree
             }
             
             //If the package have depends, we continue
-            if($depends !== []) {
+            if ($depends !== []) {
                 continue;
             }
             
@@ -224,16 +224,16 @@ class Tree
         $treeOrder = 0;
         
         //Read the tree for update the order of each dependency
-        foreach($this->tree as $dependencies) {
+        foreach ($this->tree as $dependencies) {
             if ($dependencies === []) {
                 continue;
             }
             
-            foreach($dependencies as $dependencyName) {
+            foreach ($dependencies as $dependencyName) {
                 $dependencyInfos = &$this->dependenciesInfos[$dependencyName];
                 
                 //If the order has not be already updated
-                if($dependencyInfos->order > -1) {
+                if ($dependencyInfos->order > -1) {
                     continue;
                 }
                 
@@ -259,16 +259,16 @@ class Tree
     protected function generateOrderForADependency($dependencyName, $currentOrder)
     {
         $depends = $this->dependenciesInfos[$dependencyName]->dependencies;
-        if($depends === []) {
+        if ($depends === []) {
             return;
         }
         
         $order = $currentOrder+1;
-        if(!isset($this->tree[$order])) {
+        if (!isset($this->tree[$order])) {
             $this->tree[$order] = [];
         }
         
-        foreach($depends as $dependName) {
+        foreach ($depends as $dependName) {
             //If the dependency of the dependency is in a other tree
             if (!isset($this->dependenciesInfos[$dependName])) {
                 continue;
