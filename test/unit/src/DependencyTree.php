@@ -203,4 +203,43 @@ class DependencyTree extends atoum
             ->array($this->mock->generateDependenciesTree($orderTree))
                 ->isEqualTo($expected);
     }
+    
+    public function testIssue4()
+    {
+        $this->mock->addDependency('package1');
+        $this->mock->addDependency('package7', 3);
+        $this->mock->addDependency('package8', 3);
+        
+        $this->mock->addDependency('package2', 1);
+        $this->mock->addDependency('package3', 1, ['package2']);
+        $this->mock->addDependency('package4', 0, ['package5']);
+        $this->mock->addDependency('package5', 1, ['package2']);
+        $this->mock->addDependency('package9', 1, ['package4']);
+        $this->mock->addDependency('package6', 1, ['package3', 'package5']);
+        
+        $this->assert('test fix issue #4 : Case where tree is good')
+            ->array($this->mock->generateTree())
+                ->size
+                    ->isGreaterThan(0);
+        
+        
+        $mock = new \bultonFr\DependencyTree\test\unit\mocks\DependencyTree;
+        
+        $mock->addDependency('package1');
+        $mock->addDependency('package7', 3);
+        $mock->addDependency('package8', 3);
+        
+        $mock->addDependency('package2', 1);
+        $mock->addDependency('package3', 1, ['package2']);
+        $mock->addDependency('package4', 0, ['package5']);
+        $mock->addDependency('package5', 1, ['package9']);
+        $mock->addDependency('package9', 1, ['package4']);
+        $mock->addDependency('package6', 1, ['package3', 'package5']);
+        
+        $this->assert('test fix issue #4 : Case where dependency is an infinite loop')
+            ->exception(function() use ($mock) {
+                $mock->generateTree();
+            })
+                ->hasMessage('Infinite depends loop find for package package5 - Loop info : package9, package4');
+    }
 }

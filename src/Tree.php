@@ -23,9 +23,16 @@ class Tree
     protected $dependenciesPositions = [];
     
     /**
-     * @var array : The generate tree
+     * @var array $tree : The generate tree
      */
     protected $tree = [];
+    
+    /**
+     * @var \stdClass $genOrderSecurityLoop : Informations about dependency
+     *  during the generateOrder.
+     *  It's a security against infinite loop.
+     */
+    protected $genOrderSecurityLoop;
 
     /**
      * Add a dependency to system
@@ -183,6 +190,7 @@ class Tree
      */
     public function generateOrderFromDependencies()
     {
+        $this->initGenOrderSecurityLoop(0);
         $this->tree = [[]]; //generate a empty tree
         
         //Read all depends of each dependencies
@@ -202,6 +210,7 @@ class Tree
             $this->tree[0][$dependencyName] = $dependencyName;
             
             //And generate the order for this depends
+            $this->genOrderSecurityLoopAddDepend($dependencyName, 0);
             $this->generateOrderForADependency($dependencyName, 0);
         }
         
@@ -265,12 +274,122 @@ class Tree
                 continue;
             }
             
+            //Infinite dependency loop security
+            $this->checkReinitGenOrderSecurityLoop($order);
+            $this->genOrderCheckInfiniteLoop($dependName);
             $this->tree[$order][$dependName] = $dependName;
             
+            $this->genOrderSecurityLoopAddDepend($dependName, $order);
             $this->generateOrderForADependency(
                 $dependName,
                 $order
             );
         }
+    }
+    
+    /**
+     * Add a dependency into list used by security infinite depend loop.
+     * 
+     * @param string $dependencyName Dependency name
+     * @param int    $order          The current order of the dependency
+     * 
+     * @return void
+     */
+    protected function genOrderSecurityLoopAddDepend($dependencyName, $order)
+    {
+        $this->checkReinitGenOrderSecurityLoop($order);
+        
+        $this->genOrderSecurityLoop->order  = $order;
+        $this->genOrderSecurityLoop->list[] = (object) [
+            'dependName' => $dependencyName,
+            'dependList' => []
+        ];
+    }
+    
+    /**
+     * Check if we reinitialize the list used against dependency infinite loop
+     * 
+     * @param int $order The current order of the dependency
+     * 
+     * @return void
+     */
+    protected function checkReinitGenOrderSecurityLoop($order)
+    {
+        if ($order <= $this->genOrderSecurityLoop->order) {
+            $this->initGenOrderSecurityLoop($order);
+        }
+    }
+    
+    /**
+     * (re)Initialize the list used against dependency infinite loop
+     * 
+     * @param int $order The current order of the dependency
+     * 
+     * @return void
+     */
+    protected function initGenOrderSecurityLoop($order)
+    {
+        $this->genOrderSecurityLoop = (object) [
+            'order' => $order,
+            'list'  => []
+        ];
+    }
+    
+    /**
+     * Check if we allow to moved a dependency in the tree to protect
+     * against infine loop.
+     * It's for the case where a dependency is moved to be loaded before an
+     * another, but this another dependency depend on the first package
+     * who asked to be moved.
+     * So the system try to moved packages at the infine. We protect this.
+     * 
+     * @see Issue #4 on the github repo.
+     * 
+     * @param string $checkDependName : The name of dependency
+     * 
+     * @return void
+     * 
+     * @throws Exception The infinite loop security.
+     */
+    protected function genOrderCheckInfiniteLoop($checkDependName)
+    {
+        $runException = false;
+        foreach ($this->genOrderSecurityLoop->list as &$checkInfos) {
+            if ($checkInfos->dependList === []) {
+                $checkInfos->dependList[] = $checkDependName;
+                continue;
+            }
+            
+            if (
+                $checkInfos->dependList !== []
+                && $checkInfos->dependName !== $checkDependName
+            ) {
+                $checkInfos->dependList[] = $checkDependName;
+                continue;
+            }
+            
+            $runException = true;
+            break;
+        }
+        
+        if ($runException === false) {
+            unset($checkInfos); //Kill ref
+            return;
+        }
+        
+        //Package is already moved for the original dependency : Loop error
+        $loopInfos = '';
+        foreach ($checkInfos->dependList as $packageName) {
+            if ($loopInfos !== '') {
+                $loopInfos .= ', ';
+            }
+            
+            $loopInfos .= $packageName;
+        }
+        
+        throw new Exception(
+            'Infinite depends loop find for package '.$checkInfos->dependName
+            .' - Loop info : '.$loopInfos
+        );
     }
 }
