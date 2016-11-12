@@ -244,7 +244,7 @@ class Tree
         }
         
         //Reinit the tree for use the main system of tree generator.
-        $this->tree = null;
+        $this->tree = [];
     }
     
     /**
