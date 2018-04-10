@@ -23,9 +23,16 @@ class Tree
     protected $dependenciesPositions = [];
     
     /**
-     * @var array : The generate tree
+     * @var array $tree : The generate tree
      */
     protected $tree = [];
+    
+    /**
+     * @var \stdClass $genOrderSecurityLoop : Informations about dependency
+     *  during the generateOrder.
+     *  It's a security against infinite loop.
+     */
+    protected $genOrderSecurityLoop;
 
     /**
      * Add a dependency to system
@@ -41,11 +48,11 @@ class Tree
     public function addDependency($name, $order = 0, $dependencies = [])
     {
         //Check if dependency is already declared.
-        if(isset($this->dependenciesInfos[$name])) {
+        if (isset($this->dependenciesInfos[$name])) {
             throw new Exception('Dependency '.$name.' already declared.');
         }
         
-        if(!is_array($dependencies)) {
+        if (!is_array($dependencies)) {
             throw new Exception('Dependencies must be passed in a array.');
         }
 
@@ -56,13 +63,13 @@ class Tree
         $this->dependenciesInfos[$name] = $dependencyInfos;
         
         //Create the key for list of depends if she doesn't exist
-        if(!isset($this->listDepends[$name])) {
+        if (!isset($this->listDepends[$name])) {
             $this->listDepends[$name] = [];
         }
         
         //Generate the list of depends
-        if($dependencies !== []) {
-            foreach($dependencies as $dependencyName) {
+        if ($dependencies !== []) {
+            foreach ($dependencies as $dependencyName) {
                 if(!isset($this->listDepends[$dependencyName])) {
                     $this->listDepends[$dependencyName] = [];
                 }
@@ -83,11 +90,11 @@ class Tree
     {
         //Read all depencies declared and positioned each dependency on
         //the tree with they order value
-        foreach($this->dependenciesInfos as $name => $dependency) {
+        foreach ($this->dependenciesInfos as $name => $dependency) {
             $order = $dependency->order;
             
             //If the line for this order not exist
-            if(!isset($this->tree[$order])) {
+            if (!isset($this->tree[$order])) {
                 $this->tree[$order] = [];
             }
             
@@ -98,8 +105,8 @@ class Tree
         
         //Read the tree and check depends of each package.
         //Move some package in the tree if need for depends.
-        foreach($this->tree as $dependencies) {
-            foreach($dependencies as $dependencyName) {
+        foreach ($this->tree as $dependencies) {
+            foreach ($dependencies as $dependencyName) {
                 $this->checkDepend($dependencyName);
             }
         }
@@ -125,17 +132,17 @@ class Tree
         $order           = $dependencyInfos->order;
 
         //No depends :)
-        if($listDepends === []) {
+        if ($listDepends === []) {
             return;
         }
 
         //Read all depends and check if they correctly spoted.
         //If not, call the method to move the depend read.
-        foreach($listDepends as $dependencyName) {
+        foreach ($listDepends as $dependencyName) {
             $dependencyPos   = $this->dependenciesPositions[$dependencyName];
             $dependencyOrder = $dependencyPos[0];
 
-            if($dependencyOrder < $order) {
+            if ($dependencyOrder < $order) {
                 $this->moveDepend($dependencyName, $order);
             }
         }
@@ -156,7 +163,7 @@ class Tree
         $oldOrder        = $dependencyInfos->order;
 
         //If the new position not already exist in the tree
-        if(!isset($this->tree[$newOrder])) {
+        if (!isset($this->tree[$newOrder])) {
             $this->tree[$newOrder] = [];
         }
 
@@ -183,13 +190,19 @@ class Tree
      */
     public function generateOrderFromDependencies()
     {
+        $this->initGenOrderSecurityLoop(0);
         $this->tree = [[]]; //generate a empty tree
         
         //Read all depends of each dependencies
-        foreach($this->listDepends as $dependencyName => $depends) {
+        foreach ($this->listDepends as $dependencyName => $depends) {
+        
+            //If the dependency in the depend's list is declared on this tree.
+            if (!isset($this->dependenciesInfos[$dependencyName])) {
+                continue;
+            }
             
             //If the package have depends, we continue
-            if($depends !== []) {
+            if ($depends !== []) {
                 continue;
             }
             
@@ -197,6 +210,7 @@ class Tree
             $this->tree[0][$dependencyName] = $dependencyName;
             
             //And generate the order for this depends
+            $this->genOrderSecurityLoopAddDepend($dependencyName, 0);
             $this->generateOrderForADependency($dependencyName, 0);
         }
         
@@ -205,22 +219,32 @@ class Tree
         //in the correct order
         $this->tree = array_reverse($this->tree);
         
+        //Some line could be empty because the dependency is in another tree
+        //So we define the order manually.
+        $treeOrder = 0;
+        
         //Read the tree for update the order of each dependency
-        foreach($this->tree as $order => $dependencies) {
-            foreach($dependencies as $dependencyName) {
+        foreach ($this->tree as $dependencies) {
+            if ($dependencies === []) {
+                continue;
+            }
+            
+            foreach ($dependencies as $dependencyName) {
                 $dependencyInfos = &$this->dependenciesInfos[$dependencyName];
                 
                 //If the order has not be already updated
-                if($dependencyInfos->order > -1) {
+                if ($dependencyInfos->order > -1) {
                     continue;
                 }
                 
-                $dependencyInfos->order = $order;
+                $dependencyInfos->order = $treeOrder;
             }
+            
+            $treeOrder++;
         }
         
         //Reinit the tree for use the main system of tree generator.
-        $this->tree = null;
+        $this->tree = [];
     }
     
     /**
@@ -235,22 +259,137 @@ class Tree
     protected function generateOrderForADependency($dependencyName, $currentOrder)
     {
         $depends = $this->dependenciesInfos[$dependencyName]->dependencies;
-        if($depends === []) {
+        if ($depends === []) {
             return;
         }
         
         $order = $currentOrder+1;
-        if(!isset($this->tree[$order])) {
+        if (!isset($this->tree[$order])) {
             $this->tree[$order] = [];
         }
         
-        foreach($depends as $dependName) {
+        foreach ($depends as $dependName) {
+            //If the dependency of the dependency is in a other tree
+            if (!isset($this->dependenciesInfos[$dependName])) {
+                continue;
+            }
+            
+            //Infinite dependency loop security
+            $this->checkReinitGenOrderSecurityLoop($order);
+            $this->genOrderCheckInfiniteLoop($dependName);
             $this->tree[$order][$dependName] = $dependName;
             
+            $this->genOrderSecurityLoopAddDepend($dependName, $order);
             $this->generateOrderForADependency(
                 $dependName,
                 $order
             );
         }
+    }
+    
+    /**
+     * Add a dependency into list used by security infinite depend loop.
+     * 
+     * @param string $dependencyName Dependency name
+     * @param int    $order          The current order of the dependency
+     * 
+     * @return void
+     */
+    protected function genOrderSecurityLoopAddDepend($dependencyName, $order)
+    {
+        $this->checkReinitGenOrderSecurityLoop($order);
+        
+        $this->genOrderSecurityLoop->order  = $order;
+        $this->genOrderSecurityLoop->list[] = (object) [
+            'dependName' => $dependencyName,
+            'dependList' => []
+        ];
+    }
+    
+    /**
+     * Check if we reinitialize the list used against dependency infinite loop
+     * 
+     * @param int $order The current order of the dependency
+     * 
+     * @return void
+     */
+    protected function checkReinitGenOrderSecurityLoop($order)
+    {
+        if ($order <= $this->genOrderSecurityLoop->order) {
+            $this->initGenOrderSecurityLoop($order);
+        }
+    }
+    
+    /**
+     * (re)Initialize the list used against dependency infinite loop
+     * 
+     * @param int $order The current order of the dependency
+     * 
+     * @return void
+     */
+    protected function initGenOrderSecurityLoop($order)
+    {
+        $this->genOrderSecurityLoop = (object) [
+            'order' => $order,
+            'list'  => []
+        ];
+    }
+    
+    /**
+     * Check if we allow to moved a dependency in the tree to protect
+     * against infine loop.
+     * It's for the case where a dependency is moved to be loaded before an
+     * another, but this another dependency depend on the first package
+     * who asked to be moved.
+     * So the system try to moved packages at the infine. We protect this.
+     * 
+     * @see Issue #4 on the github repo.
+     * 
+     * @param string $checkDependName : The name of dependency
+     * 
+     * @return void
+     * 
+     * @throws Exception The infinite loop security.
+     */
+    protected function genOrderCheckInfiniteLoop($checkDependName)
+    {
+        $runException = false;
+        foreach ($this->genOrderSecurityLoop->list as &$checkInfos) {
+            if ($checkInfos->dependList === []) {
+                $checkInfos->dependList[] = $checkDependName;
+                continue;
+            }
+            
+            if (
+                $checkInfos->dependList !== []
+                && $checkInfos->dependName !== $checkDependName
+            ) {
+                $checkInfos->dependList[] = $checkDependName;
+                continue;
+            }
+            
+            $runException = true;
+            break;
+        }
+        
+        if ($runException === false) {
+            unset($checkInfos); //Kill ref
+            return;
+        }
+        
+        //Package is already moved for the original dependency : Loop error
+        $loopInfos = '';
+        foreach ($checkInfos->dependList as $packageName) {
+            if ($loopInfos !== '') {
+                $loopInfos .= ', ';
+            }
+            
+            $loopInfos .= $packageName;
+        }
+        
+        throw new Exception(
+            'Infinite depends loop find for package '.$checkInfos->dependName
+            .' - Loop info : '.$loopInfos
+        );
     }
 }

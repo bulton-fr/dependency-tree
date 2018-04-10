@@ -25,7 +25,7 @@ $report->addField(new atoum\report\fields\runner\atoum\logo());
 $report->addField(new atoum\report\fields\runner\result\logo());
 /**/
 
-$script->getRunner()->addTestsFromDirectory(__DIR__ . '/test/unit');
+$script->getRunner()->addTestsFromDirectory(__DIR__ . '/test/unit/src');
 
 if(file_exists('/home/travis'))
 {

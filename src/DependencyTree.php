@@ -25,11 +25,11 @@ class DependencyTree
     public function addDependency($name, $order = 0, $dependencies = [])
     {
         //Check if dependency is already declared.
-        if(isset($this->dependencies[$name])) {
+        if (isset($this->dependencies[$name])) {
             throw new Exception('Dependency '.$name.' already declared.');
         }
         
-        if(!is_array($dependencies)) {
+        if (!is_array($dependencies)) {
             throw new Exception('Dependencies must be passed in a array.');
         }
 
@@ -65,7 +65,7 @@ class DependencyTree
         $tree = new Tree;
         
         //add all dependency to the Tree
-        foreach($this->dependencies as $dependencyName => $dependencyInfos) {
+        foreach ($this->dependencies as $dependencyName => $dependencyInfos) {
             $tree->addDependency(
                 $dependencyName,
                 $dependencyInfos->order,
@@ -88,10 +88,10 @@ class DependencyTree
         //Read the orderTree and generate a tree
         //for each line of the first tree
         
-        foreach($orderTree as $order => $dependencies) {
+        foreach ($orderTree as $order => $dependencies) {
             $tree = new Tree;
             
-            foreach($dependencies as $dependencyName) {
+            foreach ($dependencies as $dependencyName) {
                 $dependencyInfos = $this->dependencies[$dependencyName];
                 
                 $tree->addDependency(
