@@ -6,24 +6,23 @@
         "dependency tree",
         "php"
     ],
-    "homepage": "https://github.com/bulton-fr/CallCurl",
+    "homepage": "https://github.com/bulton-fr/dependency-tree",
     "time": "2016-06-19",
     "license": "LGPL-3.0",
     "authors": [
         {
             "name": "Vermeulen Maxime / Bulton",
             "homepage": "http://www.bulton.fr",
-            "email": "bulton.fr@bulton.fr"
+            "email": "bulton.fr@gmail.com"
         }
     ],
     "support": {
         "email": "support@bulton.fr",
-        "issues": "https://github.com/bulton-fr/bfw/issues",
-        "source": "https://github.com/bulton-fr/bfw"
+        "issues": "https://github.com/bulton-fr/dependency-tree/issues",
+        "source": "https://github.com/bulton-fr/dependency-tree"
     },
     "require": {
-        "php": ">=5.4.0",
-        "ext-curl": "@stable"
+        "php": ">=5.4.0"
     },
     "require-dev": {
         "atoum/atoum": "~2.5"

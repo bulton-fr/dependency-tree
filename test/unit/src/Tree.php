@@ -9,7 +9,7 @@ require_once(__DIR__.'/../../../vendor/autoload.php');
 class Tree extends atoum
 {
     /**
-     * @var $mock : Instance du mock pour la class CallCurl
+     * @var $mock : Instance du mock pour la class Tree
      */
     protected $mock;
 
