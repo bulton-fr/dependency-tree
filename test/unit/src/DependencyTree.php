@@ -9,7 +9,7 @@ require_once(__DIR__.'/../../../vendor/autoload.php');
 class DependencyTree extends atoum
 {
     /**
-     * @var $mock : Instance du mock pour la class CallCurl
+     * @var $mock : Instance du mock pour la class DependencyTree
      */
     protected $mock;
 
@@ -18,7 +18,13 @@ class DependencyTree extends atoum
      */
     public function beforeTestMethod($testMethod)
     {
-        $this->mock = new \bultonFr\DependencyTree\test\unit\mocks\DependencyTree;
+        $this->mockGenerator
+            ->makeVisible('generateOrderTree')
+            ->makeVisible('generateDependenciesTree')
+            ->generate('bultonFr\DependencyTree\test\unit\mocks\DependencyTree')
+        ;
+        
+        $this->mock = new \mock\bultonFr\DependencyTree\test\unit\mocks\DependencyTree;
     }
 
     public function testAddDependency()
