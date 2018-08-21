@@ -14,18 +14,7 @@ use \mageekguy\atoum,
     \mageekguy\atoum\reports;
 
 $report = $script->addDefaultReport();
-
-/*
-LOGO
-*/
-// This will add the atoum logo before each run.
-$report->addField(new atoum\report\fields\runner\atoum\logo());
-
-// This will add a green or red logo after each run depending on its status.
-$report->addField(new atoum\report\fields\runner\result\logo());
-/**/
-
-$script->getRunner()->addTestsFromDirectory(__DIR__ . '/test/unit/src');
+$script->getRunner()->addTestsFromDirectory(__DIR__.'/test/unit/src');
 
 if(file_exists('/home/travis'))
 {

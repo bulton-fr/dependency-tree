@@ -16,14 +16,4 @@ class DependencyTree extends \bultonFr\DependencyTree\DependencyTree
     {
         return $this->$name;
     }
-
-    public function generateOrderTree()
-    {
-        return parent::generateOrderTree();
-    }
-
-    public function generateDependenciesTree($orderTree)
-    {
-        return parent::generateDependenciesTree($orderTree);
-    }
 }
