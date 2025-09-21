@@ -41,16 +41,33 @@ jobs:
     - name: Configure GitHub token for Composer
       run: composer config github-oauth.github.com ${{ secrets.GH_COMPOSER_TOKEN }}
     
+    # BEGIN PHP 7.2+ & 8.0+
     - name: Install dependencies (PHP >= 7.2)
       if: matrix.php-version >= '7.2'
       run: composer install --prefer-dist --no-progress
+    # END PHP 7.2+ & 8.0+
     
-    - name: Install minimal dependencies (PHP < 7.2)
+    # BEGIN PHP 5.6, 7.0 & 7.1
+    # Error : No composer.lock file present. Updating dependencies to latest instead of installing from lock file.
+    # So we remove the composer install as first command and remove the composer.lock file (to be sure there are not)
+    # After that we add atoum dependencies and remove phpstan, phpcs and phpmd (not compatible with PHP < 7.2)
+    # Finally we do a composer install without PHP 7.2+ dependencies so we are good
+    - name: Remove composer.lock (PHP < 7.2)
       if: matrix.php-version < '7.2'
-      run: |
-        composer install --prefer-dist --no-progress --no-dev --ignore-platform-reqs
-        composer require --dev "atoum/atoum:^3.1" --ignore-platform-reqs --no-interaction
-        composer require --dev "atoum/visibility-extension:^1.3" --ignore-platform-reqs --no-interaction
+      run: rm -f composer.lock
+    
+    - name: Install atoum/atoum & atoum/visibility-extension (PHP < 7.2)
+      if: matrix.php-version < '7.2'
+      run: composer require --no-update --dev atoum/atoum:^3.1 atoum/visibility-extension:^1.3
+    
+    - name: Remove others dev dependencies (PHP < 7.2)
+      if: matrix.php-version < '7.2'
+      run: composer remove --no-update --dev phpstan/phpstan squizlabs/php_codesniffer phpmd/phpmd
+    
+    - name: Install dependencies (PHP < 7.2)
+      if: matrix.php-version < '7.2'
+      run: composer install --prefer-dist --no-progress --ignore-platform-reqs
+    # END PHP 5.6, 7.0 & 7.1
     
     - name: Run test suite
       run: ./vendor/bin/atoum -c .atoum.php +verbose
