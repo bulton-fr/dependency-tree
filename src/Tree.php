@@ -178,7 +178,7 @@ class Tree
         // Call checkDepend for check all depends of this dependency
         $this->checkDepend($dependencyName);
     }
-    
+
     /**
      * Generate the order position from the depends of each dependencies
      *
@@ -245,7 +245,7 @@ class Tree
         // Reinit the tree for use the main system of tree generator.
         $this->tree = [];
     }
-    
+
     /**
      * Define the order of all the dependencies of dependency
      *
@@ -285,7 +285,7 @@ class Tree
             );
         }
     }
-    
+
     /**
      * Add a dependency into list used by security infinite depend loop.
      *
@@ -304,7 +304,7 @@ class Tree
             'dependList' => []
         ];
     }
-    
+
     /**
      * Check if we reinitialize the list used against dependency infinite loop
      *
@@ -318,7 +318,7 @@ class Tree
             $this->initGenOrderSecurityLoop($order);
         }
     }
-    
+
     /**
      * (re)Initialize the list used against dependency infinite loop
      *
@@ -333,7 +333,7 @@ class Tree
             'list'  => []
         ];
     }
-    
+
     /**
      * Check if we allow to moved a dependency in the tree to protect
      * against infine loop.

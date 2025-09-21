@@ -11,7 +11,7 @@ class DependencyTree
      * @var array $dependencies List of dependency with there infos
      */
     protected $dependencies = [];
-    
+
     /**
      * Add a dependency to system
      *
@@ -55,7 +55,7 @@ class DependencyTree
 
         return $finalTree;
     }
-    
+
     /**
      * Generate the first tree. It's a order tree
      *
@@ -76,7 +76,7 @@ class DependencyTree
 
         return $tree->generateTree();
     }
-    
+
     /**
      * Generate the second tree. It's a dependency tree
      *
