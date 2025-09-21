@@ -1,7 +1,16 @@
 # dependency-tree
 Lib for generate a dependency tree.
 
-[![Build Status](https://travis-ci.org/bulton-fr/dependency-tree.svg?branch=master)](https://travis-ci.org/bulton-fr/dependency-tree) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bulton-fr/dependency-tree/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bulton-fr/dependency-tree/?branch=master) [![Coverage Status](https://coveralls.io/repos/github/bulton-fr/dependency-tree/badge.svg?branch=master)](https://coveralls.io/github/bulton-fr/dependency-tree?branch=master)
+[![PHP Versions](https://img.shields.io/badge/php-5.6%20to%208.3-777bb3.svg?logo=php&logoColor=white&labelColor=555555)](https://github.com/bulton-fr/dependency-tree/actions)
+[![Unit Tests](https://gh-badges.bulton.fr/badge?repository=bulton-fr/dependency-tree&branch=master&workflow=CI&job=test)](https://github.com/bulton-fr/dependency-tree/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/bulton-fr/dependency-tree/graph/badge.svg)](https://codecov.io/github/bulton-fr/dependency-tree)
+[![PHPStan](https://gh-badges.bulton.fr/badge?repository=bulton-fr/dependency-tree&branch=master&workflow=CI&job=phpstan)](https://github.com/bulton-fr/dependency-tree/actions/workflows/ci.yml)
+[![Code Style](https://gh-badges.bulton.fr/badge?repository=bulton-fr/dependency-tree&branch=master&workflow=CI&job=phpcs)](https://github.com/bulton-fr/dependency-tree/actions/workflows/ci.yml)
+[![PHPMD](https://gh-badges.bulton.fr/badge?repository=bulton-fr/dependency-tree&branch=master&workflow=CI&job=phpmd)](https://github.com/bulton-fr/dependency-tree/actions/workflows/ci.yml)
+
+[![Latest Stable Version](https://poser.pugx.org/bulton-fr/dependency-tree/v/stable.svg)](https://packagist.org/packages/bulton-fr/dependency-tree) 
+[![Latest Unstable Version](https://poser.pugx.org/bulton-fr/dependency-tree/v/unstable.svg)](https://packagist.org/packages/bulton-fr/dependency-tree) 
+[![License](https://poser.pugx.org/bulton-fr/dependency-tree/license.svg)](https://packagist.org/packages/bulton-fr/dependency-tree)
 
 The Principle is to have a tree who contains lines. For each lines, there is a tree who contains lines too.
 
