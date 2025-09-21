@@ -97,7 +97,7 @@ array(3) {
 
 In a graphic representation : 
 
-![dependency-tree graphic reprensentation](http://img.bulton.fr/github-dependency-tree-example.png)
+![dependency-tree graphic reprensentation](https://projects.bulton.fr/dependency-tree/github-readme-graphic.png)
 
 At left we see the first tree with the list of package at their time loader.
 At right, we see the tree for the second line, with packages sorted to be loaded in the correct order.
