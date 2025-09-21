@@ -354,7 +354,11 @@ class Tree
     protected function genOrderCheckInfiniteLoop($checkDependName)
     {
         $runException = false;
+        $lastCheckInfo = null; //Only for PHPStan, ref do the job
+
         foreach ($this->genOrderSecurityLoop->list as &$checkInfos) {
+            $lastCheckInfo = &$checkInfos;
+
             if ($checkInfos->dependList === []) {
                 $checkInfos->dependList[] = $checkDependName;
                 continue;
@@ -376,10 +380,14 @@ class Tree
             unset($checkInfos); //Kill ref
             return;
         }
+
+        if ($lastCheckInfo === null) {
+            return;
+        }
         
         //Package is already moved for the original dependency : Loop error
         $loopInfos = '';
-        foreach ($checkInfos->dependList as $packageName) {
+        foreach ($lastCheckInfo->dependList as $packageName) {
             if ($loopInfos !== '') {
                 $loopInfos .= ', ';
             }
@@ -388,7 +396,7 @@ class Tree
         }
         
         throw new Exception(
-            'Infinite depends loop find for package '.$checkInfos->dependName
+            'Infinite depends loop find for package '.$lastCheckInfo->dependName
             .' - Loop info : '.$loopInfos
         );
     }
