@@ -144,7 +144,7 @@ class Tree extends atoum
             1 => ['package2']
         ];
         
-        //@TODO : Create the "dependenciesPositions" array
+        //@TODO : Create the "dependenciesPosList" array
         
         $this->assert('test checkDepend : With depends unordered')
             ->given($this->mock->checkDepend('package2'))
